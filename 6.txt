@@ -1,0 +1,91 @@
+
+
+#include <iostream>
+using namespace std;
+
+const int N = 50;       // a positive integer = array capacity
+
+double mean(double score[], int num);
+
+
+double stdDeviation(double score[], int num, double theMean);
+
+
+void assignGrades(double score[], int num, double theMean, double theStdDev,
+                  char grades[]);
+
+
+int main()
+{
+  double aScore,
+         score[N];
+  int count = 0;
+  char grade[N]; 
+  cout << "Enter scores (-1 to stop): ";
+  for(;;)
+  {
+    cin >> aScore;
+    if (aScore == -1) break;
+
+    score[count] = aScore;
+    count++;
+  }
+
+  if (count == 0)
+  {
+    cout << "No scores were entered.\n";
+    return 0;
+  }
+
+  double theMean = mean(score, count);
+  double theStdDev = stdDeviation(score, count, theMean);
+  cout << "The mean is " << theMean 
+       << " and the standard deviation is " << theStdDev << endl;
+
+  assignGrades(score, count, theMean, theStdDev, grade);
+
+  cout << "Here are the scores and letter grades: \n";
+  for (int i = 0; i < count; i++)
+     cout << score[i] << " --- " << grade[i] << endl;
+
+}
+
+//---  mean()
+double mean(double score[], int num)
+{
+  double sum = 0.0;
+  int n;
+  for (n = 0; n < num; n++)
+    sum += score[n];
+
+  return sum/n;
+}
+
+//---  stdDeviation()
+double stdDeviation(double score[], int  num, double theMean)
+{
+  double sum = 0.0;
+
+  for (int n = 0; n < num; n++)
+  sum += (score[n]- theMean)*(score[n] - theMean);
+
+  return sqrt(sum/num);
+}
+
+//--- assignGrades()
+void assignGrades(double score[], int  num, double theMean, double theStdDev,
+                  char grade[])
+{
+  if (theStdDev == 0)          // all scores the same -- grade = C
+  {
+    for (int n = 0; n < num; n++)
+      grade[n] = 'C';
+    return;
+  }
+  // else
+  double DF = theMean- 1.5 *theStdDev,
+         CD = theMean- 0.5 *theStdDev,
+         BC = theMean+ 0.5 *theStdDev,
+         AB = theMean+ 1.5 *theStdDev;
+  for (int n = 0; n < num; n++)
+  if ( score[n] < DF)

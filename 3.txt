@@ -1,0 +1,44 @@
+/*
+Program Name: printBinary
+By: Howard Joel Kass
+Date: 6/17/2013
+Purpose: Displays int values in binary using the gcc compiler and bitwise operators.
+
+
+*/
+
+
+#include <iostream>
+using namespace std;
+
+void printBinary(int n);
+
+int main()
+{
+	int value;
+	for (; ;)
+	{ 
+		printf("Input value to convert to binary:");
+		cin >> value;
+		if (value == -999) break;
+
+		printBinary(value);
+		cout << endl;
+	}
+}
+
+
+//printf ("%s \n", "A string");
+  void printBinary(int n)
+     {
+	unsigned mask = 0x80000000;  // set this equal to 0x80000000
+
+	for (int i = 0; i < 8*sizeof(int); i++)
+	     {
+		if ((mask & n) != 0)
+			cout << '1';
+		else
+			cout << '0';
+		mask >>= 1;
+	}
+}

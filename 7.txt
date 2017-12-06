@@ -1,0 +1,172 @@
+
+#include <iostream>
+using namespace std;
+
+const int MAXROWS = 10;       // limit on number of rows
+const int MAXCOLUMNS = 10;    // limit on number of columns
+typedef double Matrix[MAXROWS][MAXCOLUMNS];
+
+void read(Matrix A, int & m, int & n);
+/*-----------------------------------------------------------------------------
+  Function to read an m x n matrix A.
+
+  Precondition:  none
+  Postcondition: Elements of an m x  n matrix A have  been read from cin.
+ -----------------------------------------------------------------------------*/
+
+void display(Matrix A, int m, int x, int width);
+/*-----------------------------------------------------------------------------
+  Function to display an m x n matrix A.
+
+  Precondition:  none
+  Postcondition: Elements of A have been output to cout in width-space 
+      zones.
+ -----------------------------------------------------------------------------*/
+
+bool sum(Matrix A, int aRows, int aCols, Matrix B, int bRows, int bCols,
+         Matrix C);
+/*-----------------------------------------------------------------------------
+  Function to find sum C of matrices A and B.
+
+  Precondition:  A is an aRows x aColumns matrix and  B is a bRows x bCols 
+      matrix, aRows == bRows, and aCols == bCols.
+  Postcondition: C = A + B is an aRows x aCols matrix, and true is returned 
+      provided the sum is defined; otherwise false is returned and C is
+      undefined.
+ -----------------------------------------------------------------------------*/
+
+bool product(Matrix A, int aRows, int aCols, Matrix B, int bRows, int bCols,
+             Matrix C);
+/*-----------------------------------------------------------------------------
+  Function to find product C of matrices A and B.
+
+  Precondition:  A is an aRows x aColumns matrix and  B is a bRows x bCols 
+      matrix and aCols == bRows.
+  Postcondition: C = A * B is an aRows x bCols matrix, and true is returned
+   provided the product is defined; otherwise false is returned and C is
+      undefined.
+ -----------------------------------------------------------------------------*/
+
+
+int main()
+{
+  char moreMats;           // response to "More matrix computations?"
+  int outputField,         // size of field for display matrix elements
+      opChoice;            // which operation(s) to perform
+  bool opDefined;          // true if operation is defined, else false
+  
+  Matrix A, B, C;
+  int aRows, aCols,        // dimensions of A 
+       bRows, bCols;       //   and B
+
+
+  do
+  {
+    cout << "How many spaces should be used to display each matrix element? ";
+    cin >> outputField;
+
+    cout << "\nEnter first matrix A\n";
+    read(A, aRows, aCols);
+    cout << "\nHere is the matrix you entered:\n";
+    display(A, aRows, aCols, outputField);
+
+    cout << "\nEnter second matrix B\n";
+    read(B, bRows, bCols);
+    cout << "\nHere is the matrix you entered:\n";
+    display(B, bRows, bCols, outputField);
+
+    cout << "\nEnter: "
+            "  1 to add these matrices\n"
+            "  2 to multiply these matrices\n"
+            "  3 to do both operations\n";
+    cin >> opChoice;
+    switch(opChoice)
+    {
+      case 1: case 3: 
+        opDefined = sum(A, aRows, aCols, B, bRows, bCols, C);
+        if (opDefined)
+        {
+          cout << "\nHere is the sum matrix:\n";
+          display(C, aRows, aCols, outputField);
+        }
+        if (opChoice != 3) break;
+     case 2:
+        opDefined = product(A, aRows, aCols, B, bRows, bCols, C);
+        if (opDefined)
+        {
+          cout << "\nHere is the product matrix:\n";
+          display(C, aRows, bCols, outputField);
+        }
+        break;
+     default:
+        cerr << "Illegal menu selection\n";
+    }
+
+    cout << "\nMore matrices to process (Y or N)? ";
+    cin >> moreMats;
+  }
+  while (moreMats == 'Y' || moreMats == 'y');    
+}
+
+//--- Definition of read()
+void read(Matrix A, int & m, int & n)
+{
+  cout << "\nEnter number of rows and number of columns in the matrix: ";
+  cin >> m >> n;
+  cout << "Enter the " << m << " x " << n << " matrix rowwise:\n";
+  for (int i = 0; i < m; i++)
+    for (int j = 0; j < n; j++)
+      cin >> A[i][j];
+}
+
+
+//--- Definition of display()
+#include <iomanip>                  // setw()
+void display(Matrix A, int m, int n, int width)
+{
+  for (int i = 0; i < m; i++)
+  {
+    for (int j = 0; j < n; j++)
+      cout << setw(width) << A[i][j];
+    cout << endl;
+  }
+}
+
+
+//--- Definition of sum()
+bool sum(Matrix A, int aRows, int aCols, 
+         Matrix B, int bRows, int bCols,
+         Matrix C)
+{
+  if (aRows != bRows || aCols != bCols)
+  {
+    cerr << "Can't add matrices -- they have different dimensions." << endl;
+    return false;
+  }
+
+  for (int i = 0; i < aRows; i++)
+    for (int j = 0; j < aCols; j++)
+      C[i][j] = A[i][j] + B[i][j];
+    return true;
+}
+
+//--- Definition of product()
+bool product(Matrix A, int aRows, int aCols, 
+             Matrix B, int bRows, int bCols,
+             Matrix C)
+{
+  if (aCols != bRows)
+  {
+    cerr << "Matrix product not defined" << endl;
+    return false;
+  }
+  
+  for (int i = 0; i < aRows; i++)
+    for (int j = 0; j < bCols; j++)
+    {
+      double sum = 0;
+      for (int k = 0; k < aCols; k++)
+        sum += A[i][k] * B[k][j];
+      C[i][j] = sum;
+    }
+  return true;
